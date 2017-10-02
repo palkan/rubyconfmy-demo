@@ -3,5 +3,5 @@
 if [ "$ANYCABLE_DEPLOYMENT" == "true" ]; then
   bundle exec ./anycable
 else
-  bundle exec puma -e production -p $PORT -b 0.0.0.0  
+  bundle exec puma -e production -p $PORT
 fi
