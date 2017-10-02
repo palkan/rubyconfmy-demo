@@ -28,7 +28,7 @@ class TestApp < Rails::Application
 
   config.public_file_server.enabled = true
 
-  config.logger = Logger.new($stdout).tap { |logger| logger.level = :error }
+  config.logger = Logger.new($stdout).tap { |logger| logger.level = :info }
   Rails.logger = config.logger
 
   routes.draw do
