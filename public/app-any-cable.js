@@ -21,7 +21,6 @@
       },
 
       received: function(data){
-        console.log("Received", data);
         addMessage(messageList, data);
       }
     }

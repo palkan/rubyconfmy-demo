@@ -12,7 +12,7 @@ module FakerStream
       @stopped = true
     end
 
-    def run
+    def run(stream)
       loop do
         break if @stopped
 
@@ -26,8 +26,8 @@ module FakerStream
 
         msg = { text: "@#{author} #{text} #{tags}" }
 
-        ActionCable.server.broadcast "demo", msg
-        Anycable.pubsub.broadcast "demo", msg.to_json
+        ActionCable.server.broadcast stream, msg
+        Anycable.pubsub.broadcast stream, msg.to_json
       end
     end
   end

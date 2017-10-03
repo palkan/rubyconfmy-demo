@@ -8,6 +8,7 @@ ENV['BUNDLE_GEMFILE'] ||= File.expand_path('../Gemfile', __FILE__)
 require 'bundler/setup' if File.exist?(ENV['BUNDLE_GEMFILE'])
 
 require "rails"
+require "global_id"
 require "dotenv"
 
 require "action_controller/railtie"
@@ -28,7 +29,7 @@ class TestApp < Rails::Application
 
   config.public_file_server.enabled = true
 
-  config.logger = Logger.new($stdout).tap { |logger| logger.level = :info }
+  config.logger = Logger.new($stdout).tap { |logger| logger.level = :warn }
   Rails.logger = config.logger
 
   routes.draw do
@@ -40,12 +41,15 @@ end
 
 module ApplicationCable
   class Connection < ActionCable::Connection::Base
+    identified_by :id
+
     def connect
-      logger.info "Connected"
+      self.id = SecureRandom.uuid
+      logger.info "Connected: #{id}"
     end
 
     def disconnect
-      logger.info "Disconnected"
+      logger.info "Disconnected: #{id}"
     end
   end
 end
@@ -66,10 +70,35 @@ class DemoChannel < ApplicationCable::Channel
   end
 end
 
-class IdleChannel < ApplicationCable::Channel
-  def subscribed
+class BenchmarkChannel < ApplicationCable::Channel
+  STREAMS = (1..(ENV.fetch('SAMPLES_NUM', 10).to_i)).to_a
+
+  if ENV['ID_STREAM']
+    def subscribed
+      stream_from id
+    end
+  else
+    def subscribed
+      stream_from "all#{STREAMS.sample if ENV['SAMPLED']}"
+    end
+  end
+
+  def echo(data)
+    transmit data
+  end
+
+  def broadcast(data)
+    if ENV['ID_STREAM']
+      ActionCable.server.broadcast id, data
+    else
+      ActionCable.server.broadcast "all#{STREAMS.sample if ENV['SAMPLED']}", data
+    end
+
+    data["action"] = "broadcastResult"
+    transmit data
   end
 end
+
 
 class HomeController < ActionController::Base
   prepend_view_path Rails.root.join("views").to_s

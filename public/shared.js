@@ -1,4 +1,6 @@
 var addMessage = function(list, data){
+  if (data.text.match(/(jewel|fuck|shit|diamond)/i)) return;
+
   var node = document.createElement('div');
   node.className = "message";
   node.innerHTML =

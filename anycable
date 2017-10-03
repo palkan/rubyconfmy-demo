@@ -12,11 +12,13 @@ Anycable.config.redis_channel = "anycable"
 
 Rails.application.eager_load!
 
-go_thread = Thread.new do
-  Process.wait Process.spawn("anycable-go -redis_channel=anycable")
-  raise "Anycable-Go failed!"
-end
+unless ENV['SKIP_ANYCABLE_GO']
+  go_thread = Thread.new do
+    Process.wait Process.spawn("anycable-go -redis_channel=anycable")
+    raise "Anycable-Go failed!"
+  end
 
-go_thread.abort_on_exception = true
+  go_thread.abort_on_exception = true
+end
 
 Anycable::Server.start
