@@ -20,7 +20,7 @@ module TwitterStream
     end
 
     def run
-      client.filter(track: "rubyconfmy,rubyconf,ruby,websockets") do |tweet|
+      client.filter(track: "rubyconfmy,rubyconf,rails,websockets") do |tweet|
         ActionCable.server.broadcast "demo", text: tweet.text
         Anycable.pubsub.broadcast "demo",  { text: tweet.text }.to_json
       end

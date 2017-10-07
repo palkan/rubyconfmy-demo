@@ -10,8 +10,10 @@ gem "redis"
 
 gem "dotenv"
 
-gem "anycable-rails"
+gem "anycable-rails", "0.5.0.rc1"
 
 gem "twitter", "~> 6.1"
 
 gem "faker", "~> 1.8.4"
+
+gem 'pry-byebug'

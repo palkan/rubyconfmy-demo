@@ -21,6 +21,8 @@ require "slim-rails"
 
 require "anycable"
 
+require "pry-byebug"
+
 Dotenv.load(File.join(__dir__, '.env'))
 
 class TestApp < Rails::Application
@@ -29,13 +31,17 @@ class TestApp < Rails::Application
 
   config.public_file_server.enabled = true
 
-  config.logger = Logger.new($stdout).tap { |logger| logger.level = :warn }
-  Rails.logger = config.logger
+  config.logger = Logger.new($stdout)
+  config.log_level = :warn
 
-  routes.draw do
-    root to: "home#index"
+  config.eager_load = true
 
-    mount ActionCable.server => "/cable"
+  initializer "routes" do
+    Rails.application.routes.draw do
+      root to: "home#index"
+
+      mount ActionCable.server => "/cable"
+    end
   end
 end
 

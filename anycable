@@ -4,17 +4,19 @@
 
 # rubocop:disable all
 
+ENV['RAILS_ENV'] ||= 'production'
+
 require_relative "./app"
 require "anycable-rails"
 
-Anycable.config.connection_factory = ActionCable.server.config.connection_class.call
-Anycable.config.redis_channel = "anycable"
+Anycable.connection_factory = ActionCable.server.config.connection_class.call
+Anycable.config.redis_channel = "rbmy"
 
-Rails.application.eager_load!
+Rails.application.initialize!
 
 unless ENV['SKIP_ANYCABLE_GO']
   go_thread = Thread.new do
-    Process.wait Process.spawn("anycable-go -redis_channel=anycable")
+    Process.wait Process.spawn("anycable-go -redis_channel=rbmy")
     raise "Anycable-Go failed!"
   end
 

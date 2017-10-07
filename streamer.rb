@@ -6,6 +6,8 @@ require_relative "./app"
 require_relative "./twitter_stream"
 require_relative "./fake_stream"
 
+Rails.application.initialize!
+
 threads = []
 threads << Thread.new { TwitterStream.run }
 threads << Thread.new { FakerStream.run("demo") }
